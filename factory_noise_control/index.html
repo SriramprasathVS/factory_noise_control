@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Acoustic Monitoring &amp; Compliance System</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!-- Clean Top Navigation Header -->
+  <header class="top-header">
+    <div class="header-content">
+      <div class="brand-area">
+        <div class="brand-badge">A</div>
+        <div>
+          <div class="brand-title">Acoustic Monitoring &amp; Material Compliance</div>
+          <div class="brand-subtitle">Factory Telemetry Management System</div>
+        </div>
+      </div>
+
+      <div class="header-nav">
+        <span class="db-status-chip">
+          <span class="dot"></span>
+          IoT Sensor Grid: Online (16/16)
+        </span>
+
+        <button class="btn btn-primary" id="btn-open-maintenance-modal">
+          + Add Maintenance Request
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    
+    <!-- KPI Summary Row -->
+    <section class="kpi-row">
+      <div class="kpi-card">
+        <div class="kpi-card-label">Average Noise Level</div>
+        <div class="kpi-card-value mono" id="kpi-avg-noise">76.4 dB</div>
+        <div class="kpi-card-desc">OSHA 85 dB Safety Standard</div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-card-label">Critical Zones</div>
+        <div class="kpi-card-value mono" id="kpi-critical-zones" style="color: var(--status-critical);">2</div>
+        <div class="kpi-card-desc">Needs Attention</div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-card-label">Material Compliance</div>
+        <div class="kpi-card-value mono" id="kpi-compliance-rate">88.9%</div>
+        <div class="kpi-card-desc">Dampening Barrier Integrity</div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-card-label">Pending Maintenance</div>
+        <div class="kpi-card-value mono" id="kpi-maintenance-count">2</div>
+        <div class="kpi-card-desc">Active Work Orders</div>
+      </div>
+    </section>
+
+    <!-- Factory Zones Section -->
+    <section class="section-card">
+      <div class="section-title-row">
+        <div>
+          <h2 class="section-title">Factory Zones &amp; Sound Barriers</h2>
+          <p class="section-desc">Decibel thresholds and acoustic material status by sector</p>
+        </div>
+      </div>
+
+      <div class="zones-grid" id="zone-grid">
+        <!-- Rendered dynamically by app.js -->
+      </div>
+    </section>
+
+    <!-- Acoustic Compliance Table Section -->
+    <section class="section-card">
+      <div class="section-title-row">
+        <div>
+          <h2 class="section-title">Acoustic Compliance Logs</h2>
+          <p class="section-desc">High-resolution IoT sensor telemetry with ISO 1996 compliance categorization</p>
+        </div>
+      </div>
+
+      <!-- Simple Filter Controls -->
+      <div class="filter-bar">
+        <input type="text" id="search-logs-input" class="search-field" placeholder="Search by sensor tag, zone, or observation...">
+
+        <select id="filter-zone-select" class="select-field">
+          <option value="ALL">All Factory Zones</option>
+        </select>
+
+        <select id="filter-status-select" class="select-field">
+          <option value="ALL">All Compliance Levels</option>
+          <option value="COMPLIANT">Compliant (&lt;80 dB)</option>
+          <option value="ELEVATED">Elevated (80 - 85 dB)</option>
+          <option value="CRITICAL">Critical (&gt;=85 dB)</option>
+        </select>
+      </div>
+
+      <!-- Table -->
+      <div class="table-wrapper">
+        <table class="clean-table" id="acoustic-compliance-table">
+          <thead>
+            <tr>
+              <th>Sensor Tag</th>
+              <th>Factory Zone</th>
+              <th>Decibels</th>
+              <th>Frequency</th>
+              <th>Material Observation</th>
+              <th>Status</th>
+              <th>Timestamp</th>
+            </tr>
+          </thead>
+          <tbody id="acoustic-table-body">
+            <!-- Dynamically populated by app.js -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Clean Modal: Add Maintenance Request -->
+  <div class="modal-backdrop" id="maintenance-modal" role="dialog" aria-modal="true">
+    <div class="modal-dialog">
+      <div class="modal-header-simple">
+        <h3>Create Maintenance Work Order</h3>
+        <button class="modal-close-btn" id="btn-close-modal">&times;</button>
+      </div>
+
+      <form id="maintenance-form" novalidate>
+        <div class="modal-body-simple">
+          
+          <div class="form-item">
+            <label for="maint-zone">Factory Zone *</label>
+            <select class="input-ctrl" id="maint-zone" required>
+              <option value="">-- Select Zone --</option>
+            </select>
+            <div class="field-error">Please select a factory zone.</div>
+          </div>
+
+          <div class="form-row-2">
+            <div class="form-item">
+              <label for="maint-equipment-tag">Equipment / Sensor Tag *</label>
+              <input type="text" class="input-ctrl mono" id="maint-equipment-tag" placeholder="e.g. STAMP-HYD-04" required>
+              <div class="field-error">Format: LOC-EQUIP-01.</div>
+            </div>
+
+            <div class="form-item">
+              <label for="maint-priority">Priority *</label>
+              <select class="input-ctrl" id="maint-priority" required>
+                <option value="LOW">LOW - Routine</option>
+                <option value="MEDIUM" selected>MEDIUM - Regular</option>
+                <option value="HIGH">HIGH - Elevated</option>
+                <option value="EMERGENCY">EMERGENCY - OSHA Breach</option>
+              </select>
+              <div class="field-error">Select priority.</div>
+            </div>
+          </div>
+
+          <div class="form-item">
+            <label for="maint-reporter">Reported By *</label>
+            <input type="text" class="input-ctrl" id="maint-reporter" placeholder="e.g. Sriram (Lead Engineer)" required>
+            <div class="field-error">Reporter name is required (min 3 chars).</div>
+          </div>
+
+          <div class="form-item" style="margin-bottom: 0;">
+            <label for="maint-description">Issue Description *</label>
+            <textarea class="input-ctrl" id="maint-description" rows="3" placeholder="Describe the abnormal acoustic pattern, dampener wear, or vibration..." required></textarea>
+            <div class="field-error">Description must be at least 15 characters.</div>
+          </div>
+
+        </div>
+
+        <div class="modal-footer-simple">
+          <button type="button" class="btn btn-secondary" id="btn-cancel-modal">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="btn-submit-maintenance">Save Work Order</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="toast-box" id="toast-container"></div>
+
+  <!-- Scripts -->
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
